@@ -1,25 +1,25 @@
 import { nanoid } from "nanoid";
-import React, { Component } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { PhoneForm, PhoneLabel, Input, Btn } from './ContactForm.styled';
 
-class ContactForm extends Component {
-  state = {
-    name: '',
-    number: ''
-  };
 
-  handleChange = e => {
+const ContactForm =({ contacts, onSubmit }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  
+  const handleChange = e => {
     const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
+    if(name === 'name') {
+      setName(value);
+    } else if (name === 'number') {
+      setNumber(value);
+    }
   }
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    const { name, number } = this.state;
-    const isDuplicateName = this.props.contacts.some(
-      contact => contact.name === name
-    );
+    const isDuplicateName = contacts.some(contact => contact.name === name);
   
     if (isDuplicateName) {
         alert(`${name} is already in contacts.`);
@@ -29,41 +29,36 @@ class ContactForm extends Component {
     const id = nanoid();
     const newContact = { id, name, number };
   
-    this.props.onSubmit(newContact);
-    this.setState({ name: '', number: '' });
+    onSubmit(newContact);
+    setName('');
+    setNumber('');
   };
 
-  render() {
-    const { name, number } = this.state;
-
-    return (
-      <PhoneForm onSubmit={this.handleSubmit}>
-        <PhoneLabel>
-          Name
-          <Input
-            type="text"
-            name="name"
-            value={name}
-            required
-            onChange={this.handleChange}
-          />
-        </PhoneLabel>
-
-        <PhoneLabel>
-          Number
-          <Input
-            type="tel"
-            name="number"
-            value={number}
-            required
-            onChange={this.handleChange}
-          />
-        </PhoneLabel>
-
-        <Btn type="submit">Add contact</Btn>
-      </PhoneForm>
-    );
-  }
+  return (
+    <PhoneForm onSubmit={handleSubmit}>
+      <PhoneLabel>
+        Name
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          required
+          onChange={handleChange}
+        />
+      </PhoneLabel>
+      <PhoneLabel>
+        Number
+        <Input
+          type="tel"
+          name="number"
+          value={number}
+          required
+          onChange={handleChange}
+        />
+      </PhoneLabel>
+      <Btn type="submit">Add contact</Btn>
+    </PhoneForm>
+  );
 }
 
 ContactForm.propTypes = {
